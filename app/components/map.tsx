@@ -3,13 +3,29 @@ import { TileLayer, MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import { userIcon } from "./icons";
 import "leaflet/dist/leaflet.css";
 import markers from "./location";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
-function FlyToMarker({ flyTo }: { flyTo: { lat: number; lng: number } }) {
+function FlyToMarker({
+  flyTo,
+  markerRef,
+}: {
+  flyTo: { lat: number; lng: number };
+  markerRef: React.RefObject<any>[];
+}) {
   const map = useMap();
+
   useEffect(() => {
     if (flyTo.lat !== 0 && flyTo.lng !== 0) {
+      const index = markers.findIndex(
+        (marker) =>
+          marker.position[0] === flyTo.lat && marker.position[1] === flyTo.lng
+      );
       map.flyTo([flyTo.lat, flyTo.lng], 12);
+      setTimeout(() => {
+        if (markerRef[index]?.current) {
+          markerRef[index].current.openPopup();
+        }
+      }, 1500);
     }
   }, [flyTo, map]);
 
@@ -25,6 +41,7 @@ export default function Map({
   className: string;
   setActiveIndex: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  const markerRef = markers.map(() => React.createRef<any>());
   return (
     <MapContainer
       center={[19, 76]}
@@ -35,10 +52,11 @@ export default function Map({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <FlyToMarker flyTo={flyTo} />
+      <FlyToMarker flyTo={flyTo} markerRef={markerRef} />
       {markers.map((marker, index) => (
         <Marker
           key={index}
+          ref={markerRef[index]}
           position={[marker.position[0], marker.position[1]]}
           eventHandlers={{
             click: (event: any) => {
