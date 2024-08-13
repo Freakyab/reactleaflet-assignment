@@ -17,12 +17,10 @@ function FlyToMarker({ flyTo }: { flyTo: { lat: number; lng: number } }) {
 }
 
 export default function Map({
-  cardRefs,
   flyTo,
   className,
   setActiveIndex,
 }: {
-  cardRefs: React.RefObject<HTMLDivElement>[];
   flyTo: { lat: number; lng: number };
   className: string;
   setActiveIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -40,9 +38,8 @@ export default function Map({
       <FlyToMarker flyTo={flyTo} />
       {markers.map((marker, index) => (
         <Marker
-          ref={cardRefs[index]}
           key={index}
-          position={marker.position}
+          position={[marker.position[0], marker.position[1]]}
           eventHandlers={{
             click: (event: any) => {
               const map = event.target._map;

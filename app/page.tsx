@@ -10,9 +10,6 @@ const MapWithNoSSR = dynamic(() => import("./components/map"), {
 });
 
 export default function Home() {
-  const cardRefs: React.RefObject<HTMLDivElement>[] = markers.map(() =>
-    React.createRef()
-  );
   const [flyTo, setFlyTo] = React.useState({
     lat: 0,
     lng: 0,
@@ -38,7 +35,6 @@ export default function Home() {
           {markers.map((marker, index) => (
             <div
               key={index}
-              ref={cardRefs[index]}
               className={`flex items-center my-2 border border-gray-500 p-2 rounded-md cursor-pointer hover:bg-gray-200 transition-colors
                 ${activeIndex === index ? "bg-gray-200 border-black border-2" : "bg-[#EDF7F6]"}
                 
@@ -56,7 +52,8 @@ export default function Home() {
           ))}
         </div>
         <div className="flex-1 md:w-3/4 md:h-96">
-          <MapWithNoSSR cardRefs={cardRefs} flyTo={flyTo} 
+          <MapWithNoSSR 
+           flyTo={flyTo} 
             className="h-full w-full rounded-md border border-gray-500 "
             setActiveIndex={setActiveIndex}
           />
